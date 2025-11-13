@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Uploader - Dashboard</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="dashboard-page">
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="header-left">
+                <svg class="logo-small" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>File Uploader</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <span id="username">Loading...</span>
+                </div>
+                <button class="btn btn-secondary" id="logoutBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="16 17 21 12 16 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="21" y1="12" x2="9" y2="12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <button class="nav-item active" data-view="files">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="13 2 13 9 20 9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>All Files</span>
+                    </button>
+                    <button class="nav-item" data-view="folders">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Folders</span>
+                    </button>
+                </nav>
+
+                <!-- Storage Info -->
+                <div class="storage-info">
+                    <div class="storage-label">Storage Used</div>
+                    <div class="storage-bar">
+                        <div class="storage-bar-fill" id="storageBar"></div>
+                    </div>
+                    <div class="storage-text" id="storageText">0 MB of ∞</div>
+                </div>
+            </aside>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Upload Section -->
+                <section class="upload-section">
+                    <h2>Upload Files</h2>
+                    <form id="uploadForm" class="upload-form">
+                        <div class="upload-dropzone" id="uploadDropzone">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polyline points="17 8 12 3 7 8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <line x1="12" y1="3" x2="12" y2="15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <p class="upload-text">Drag and drop files here or click to browse</p>
+                            <input type="file" id="fileInput" multiple hidden>
+                        </div>
+                        <div id="filePreview" class="file-preview hidden"></div>
+                        <button type="submit" class="btn btn-primary" id="uploadBtn" disabled>
+                            <span class="btn-text">Upload Files</span>
+                            <span class="btn-loader hidden">
+                                <span class="spinner"></span>
+                            </span>
+                        </button>
+                    </form>
+                </section>
+
+                <!-- Files View -->
+                <section id="filesView" class="content-view active">
+                    <div class="view-header">
+                        <h2>All Files</h2>
+                        <button class="btn btn-secondary" id="refreshFilesBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polyline points="23 4 23 10 17 10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polyline points="1 20 1 14 7 14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Refresh
+                        </button>
+                    </div>
+                    <div id="filesList" class="files-grid">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>Loading files...</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Folders View -->
+                <section id="foldersView" class="content-view">
+                    <div class="view-header">
+                        <h2>Folders</h2>
+                        <button class="btn btn-primary" id="createFolderBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M12 5v14M5 12h14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            New Folder
+                        </button>
+                    </div>
+                    <div id="foldersList" class="folders-grid">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>Loading folders...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Folder Modal -->
+    <div id="createFolderModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Folder</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="createFolderForm">
+                <div class="form-group">
+                    <label for="folderName">Folder Name</label>
+                    <input 
+                        type="text" 
+                        id="folderName" 
+                        name="name" 
+                        required 
+                        placeholder="Enter folder name"
+                        autocomplete="off"
+                    >
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelFolderBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Move File Modal -->
+    <div id="moveFileModal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Move File to Folder</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="moveFileForm">
+                <div class="form-group">
+                    <label for="targetFolder">Select Folder</label>
+                    <select id="targetFolder" name="folderId" required>
+                        <option value="">Loading folders...</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelMoveBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Move</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <script src="/app.js"></script>
+</body>
+</html>
