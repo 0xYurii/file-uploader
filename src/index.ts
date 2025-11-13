@@ -4,6 +4,7 @@ import passport from "passport";
 import { PrismaClient } from "@prisma/client";
 import "./config/passport.js";
 import router from "./routes/auth.js";
+import fileRoutes from "./routes/file.js";
 
 //const place
 const PORT = 3000;
@@ -31,6 +32,7 @@ app.use(passport.session());
 // Routes
 app.use("/auth", router);
 
+app.use("/api", fileRoutes);
 //root
 app.get("/", (req, res) => {
   res.json({ message: "File uploader ready!" });
