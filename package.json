@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/0xYurii/file-uploader#readme",
   "dependencies": {
+    "@prisma/client": "^6.19.0",
     "@types/express": "^5.0.5",
     "@types/node": "^24.10.1",
     "bcryptjs": "^3.0.3",
@@ -30,6 +31,7 @@
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "pg": "^8.16.3",
+    "prisma": "^6.19.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
   },
