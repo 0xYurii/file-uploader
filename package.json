@@ -1,0 +1,38 @@
+{
+  "name": "file-uploader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0xYurii/file-uploader.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/0xYurii/file-uploader/issues"
+  },
+  "homepage": "https://github.com/0xYurii/file-uploader#readme",
+  "dependencies": {
+    "@types/express": "^5.0.5",
+    "@types/node": "^24.10.1",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "pg": "^8.16.3",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
