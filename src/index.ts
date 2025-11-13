@@ -3,7 +3,7 @@ import session from "express-session";
 import passport from "passport";
 import { PrismaClient } from "@prisma/client";
 import "./config/passport.js";
-import authRoutes from "./routes/auth.js";
+import router from "./routes/auth.js";
 
 //const place
 const PORT = 3000;
@@ -29,7 +29,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
-app.use("/auth", authRoutes);
+app.use("/auth", router);
 
 //root
 app.get("/", (req, res) => {
