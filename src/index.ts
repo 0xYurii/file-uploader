@@ -1,10 +1,35 @@
 import express from "express";
+import session from "express-session";
+import passport from "passport";
 import { PrismaClient } from "@prisma/client";
+import "./config/passport.js";
+import authRoutes from "./routes/auth.js";
 
 //const place
 const PORT = 3000;
 const app = express();
 const prisma = new PrismaClient();
+
+//Body parsers
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Session middleware
+app.use(
+  session({
+    secret: "ASMR", // ← Use env variable in production
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 },
+  }),
+);
+
+// Passport initialization
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Routes
+app.use("/auth", authRoutes);
 
 //root
 app.get("/", (req, res) => {
