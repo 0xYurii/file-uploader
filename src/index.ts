@@ -17,6 +17,11 @@ const prisma = new PrismaClient();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Trust proxy - required for secure cookies on Render
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 //Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -33,7 +38,7 @@ app.use(
     cookie: { 
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       secure: process.env.NODE_ENV === 'production', // HTTPS only in production
     },
   }),
