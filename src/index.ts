@@ -9,7 +9,7 @@ import router from "./routes/auth.js";
 import fileRoutes from "./routes/file.js";
 
 //const place
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const app = express();
 const prisma = new PrismaClient();
 
@@ -27,13 +27,14 @@ app.use(express.static(path.join(__dirname, "../public")));
 // Session middleware
 app.use(
   session({
-    secret: "ASMR", 
+    secret: process.env.SESSION_SECRET || "ASMR", // Use env variable in production
     resave: false,
     saveUninitialized: false,
     cookie: { 
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
       httpOnly: true,
       sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
     },
   }),
 );
@@ -59,5 +60,5 @@ app.get("/test-db", async (req, res) => {
 
 //check port
 app.listen(PORT, () => {
-  console.log("Server running on http://localhost:3000");
+  console.log(`Server running on http://localhost:${PORT}`);
 });
