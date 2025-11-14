@@ -27,10 +27,14 @@ app.use(express.static(path.join(__dirname, "../public")));
 // Session middleware
 app.use(
   session({
-    secret: "ASMR", // ← Use env variable in production
+    secret: "ASMR", 
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 },
+    cookie: { 
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours
+      httpOnly: true,
+      sameSite: 'lax',
+    },
   }),
 );
 

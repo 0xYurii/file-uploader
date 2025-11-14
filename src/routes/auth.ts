@@ -44,4 +44,19 @@ router.post("/logout", (req, res) => {
   });
 });
 
+//get current user route
+router.get("/me", (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+  
+  res.json({
+    user: {
+      id: req.user.id,
+      username: req.user.username,
+      email: req.user.email,
+    },
+  });
+});
+
 export default router;

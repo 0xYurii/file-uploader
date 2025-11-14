@@ -318,7 +318,8 @@ if (window.location.pathname === '/dashboard.html') {
     // Check authentication on load
     async function checkAuth() {
         try {
-            currentUser = await authAPI.getCurrentUser();
+            const response = await authAPI.getCurrentUser();
+            currentUser = response.user;
             displayUserInfo();
             await Promise.all([loadFiles(), loadFolders()]);
         } catch (error) {
