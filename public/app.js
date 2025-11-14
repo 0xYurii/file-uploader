@@ -1,5 +1,6 @@
 // ===== Configuration =====
-const API_BASE = 'http://localhost:3000';
+// Use the same origin as the page (works for both local and production)
+const API_BASE = window.location.origin;
 
 // ===== Utility Functions =====
 
