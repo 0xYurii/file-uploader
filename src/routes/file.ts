@@ -1,6 +1,9 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { upload } from "../config/multer.js";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -24,6 +27,7 @@ router.post("/upload", requireAuth, upload.single("file"), async (req, res) => {
     const file = await prisma.file.create({
       data: {
         name: req.file.originalname,
+        filename: req.file.originalname,
         size: req.file.size.toString(),
         path: req.file.path,
         userId: req.user!.id,
@@ -35,8 +39,26 @@ router.post("/upload", requireAuth, upload.single("file"), async (req, res) => {
       file: file,
     });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error("Upload error:", error);
+    res.status(500).json({ 
+      error: error.message || "Upload failed",
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
+});
+
+// Handle multer errors
+router.use((error: any, req: any, res: any, next: any) => {
+  if (error instanceof multer.MulterError) {
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'File too large. Maximum size is 5MB' });
+    }
+    return res.status(400).json({ error: error.message });
+  }
+  if (error) {
+    return res.status(400).json({ error: error.message });
+  }
+  next();
 });
 
 // Get user's files
@@ -116,6 +138,70 @@ router.patch("/files/:fileId/move", requireAuth, async (req, res) => {
       file: updatedFile,
     });
   } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete file
+router.delete("/files/:fileId", requireAuth, async (req, res) => {
+  try {
+    const { fileId } = req.params;
+
+    // Check file belongs to user
+    const file = await prisma.file.findFirst({
+      where: {
+        id: parseInt(fileId),
+        userId: req.user!.id,
+      },
+    });
+
+    if (!file) {
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // Delete file from filesystem
+    if (fs.existsSync(file.path)) {
+      fs.unlinkSync(file.path);
+    }
+
+    // Delete file from database
+    await prisma.file.delete({
+      where: { id: parseInt(fileId) },
+    });
+
+    res.json({ message: "File deleted successfully" });
+  } catch (error: any) {
+    console.error("Delete error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Download file
+router.get("/files/:fileId/download", requireAuth, async (req, res) => {
+  try {
+    const { fileId } = req.params;
+
+    // Check file belongs to user
+    const file = await prisma.file.findFirst({
+      where: {
+        id: parseInt(fileId),
+        userId: req.user!.id,
+      },
+    });
+
+    if (!file) {
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    // Check if file exists
+    if (!fs.existsSync(file.path)) {
+      return res.status(404).json({ error: "File not found on server" });
+    }
+
+    // Send file
+    res.download(file.path, file.name);
+  } catch (error: any) {
+    console.error("Download error:", error);
     res.status(500).json({ error: error.message });
   }
 });
